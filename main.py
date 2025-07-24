@@ -28,7 +28,7 @@ fernet = Fernet(base64.urlsafe_b64encode(ENCRYPTION_SECRET_KEY.encode().ljust(32
 # ─────────────────────────────────────
 CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
 CLIENT_SECRET = st.secrets["GOOGLE_CLIENT_SECRET"]
-REDIRECT_URI = "http://cashflow-spark.streamlit.app"
+REDIRECT_URI = "https://cashflow-spark.streamlit.app"
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "openid", "email", "profile"]
 
 # ─────────────────────────────────────
@@ -50,7 +50,7 @@ if "credentials" not in st.session_state:
     st.markdown(f"[🔐 Login with Gmail]({auth_url})")
 
 # Step 2: Handle Google redirect
-query_params = st.experimental_get_query_params()
+query_params = st.query_params()
 if "code" in query_params:
     code = query_params["code"][0]
 
