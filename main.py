@@ -50,7 +50,7 @@ if "credentials" not in st.session_state:
     st.markdown(f"[🔐 Login with Gmail]({auth_url})")
 
 # Step 2: Handle Google redirect
-query_params = st.query_params()
+query_params = st.experimental_get_query_params()
 if "code" in query_params:
     code = query_params["code"][0]
 
