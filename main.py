@@ -17,10 +17,9 @@ SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 ENCRYPTION_SECRET_KEY = st.secrets["ENCRYPTION_SECRET_KEY"]
 
-# Setup Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Encryption setup (must be 32 bytes for Fernet)
+# Encryption (Fernet key must be 32 bytes)
 fernet = Fernet(base64.urlsafe_b64encode(ENCRYPTION_SECRET_KEY.encode().ljust(32)[:32]))
 
 # ─────────────────────────────────────
@@ -85,12 +84,12 @@ if "code" in query_params:
         if not refresh_token:
             st.error("❌ Refresh token missing. Please try again.")
         else:
-            # Encrypt and save to Supabase
             encrypted_token = fernet.encrypt(refresh_token.encode()).decode()
 
-            existing_user = supabase.table("users").select("id").eq("email", email).execute()
+            # ✅ Fixed line with `.single()` to avoid the PostgrestAPIError
+            existing_user_response = supabase.table("users").select("id").eq("email", email).single().execute()
 
-            if existing_user.data:
+            if existing_user_response.data:
                 supabase.table("users").update({
                     "refresh_token_encrypted": encrypted_token,
                     "name": name
