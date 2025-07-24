@@ -28,7 +28,12 @@ fernet = Fernet(base64.urlsafe_b64encode(ENCRYPTION_SECRET_KEY.encode().ljust(32
 CLIENT_ID = st.secrets["GOOGLE_CLIENT_ID"]
 CLIENT_SECRET = st.secrets["GOOGLE_CLIENT_SECRET"]
 REDIRECT_URI = "https://cashflow-spark.streamlit.app"
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "openid", "email", "profile"]
+SCOPES = [
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile"
+]
 
 # ─────────────────────────────────────
 # UI
