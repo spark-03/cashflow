@@ -23,7 +23,7 @@ def store_user_token(email: str, refresh_token: str):
     # Check if user exists
     existing = supabase.table("users").select("*").eq("email", email).execute()
 
-    if existing.data:
+    if existing and existing.data:
         supabase.table("users").update(data).eq("email", email).execute()
     else:
         supabase.table("users").insert(data).execute()
