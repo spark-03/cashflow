@@ -9,7 +9,7 @@ import base64
 import os
 import requests
 
-from fetch_email import get_today_debit_amount  # ✅ Import the debit fetch function
+from fetch_emails import get_today_debit_amount  # ✅ Import the debit fetch function
 
 # ─────────────────────────────────────
 # Supabase & Encryption Setup
