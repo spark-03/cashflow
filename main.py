@@ -92,7 +92,7 @@ if "code" in query_params:
             encrypted_token = fernet.encrypt(refresh_token.encode()).decode()
 
             # ✅ Fixed line with `.single()` to avoid the PostgrestAPIError
-            existing_user_response = supabase.table("users").select("id").eq("email", email).single().execute()
+            existing_user_response = supabase.table("users").select("id").eq("email", email).maybe_single().execute()
 
             if existing_user_response.data:
                 supabase.table("users").update({
