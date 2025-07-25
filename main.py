@@ -3,7 +3,7 @@ from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from supabase import create_client, Client
+# from supabase import create_client, Client  # Removed Supabase
 from urllib.parse import urlencode
 from cryptography.fernet import Fernet
 import base64
@@ -11,15 +11,13 @@ import os
 import requests
 
 # ─────────────────────────────────────
-# Supabase & Encryption Setup
+# Supabase & Encryption Setup (Encryption still needed)
 # ─────────────────────────────────────
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+# SUPABASE_URL = st.secrets["SUPABASE_URL"]
+# SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 ENCRYPTION_SECRET_KEY = st.secrets["ENCRYPTION_SECRET_KEY"]
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# Encryption (Fernet key must be 32 bytes)
+# supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 fernet = Fernet(base64.urlsafe_b64encode(ENCRYPTION_SECRET_KEY.encode().ljust(32)[:32]))
 
 # ─────────────────────────────────────
@@ -91,20 +89,20 @@ if "code" in query_params:
         else:
             encrypted_token = fernet.encrypt(refresh_token.encode()).decode()
 
-            # ✅ Fixed line with `.single()` to avoid the PostgrestAPIError
-            existing_user_response = supabase.table("users").select("id").eq("email", email).maybe_single().execute()
+            # 🔒 Supabase Save Disabled
+            # existing_user_response = supabase.table("users").select("id").eq("email", email).maybe_single().execute()
 
-            if existing_user_response.data:
-                supabase.table("users").update({
-                    "refresh_token_encrypted": encrypted_token,
-                    "name": name
-                }).eq("email", email).execute()
-            else:
-                supabase.table("users").insert({
-                    "email": email,
-                    "name": name,
-                    "refresh_token_encrypted": encrypted_token
-                }).execute()
+            # if existing_user_response.data:
+            #     supabase.table("users").update({
+            #         "refresh_token_encrypted": encrypted_token,
+            #         "name": name
+            #     }).eq("email", email).execute()
+            # else:
+            #     supabase.table("users").insert({
+            #         "email": email,
+            #         "name": name,
+            #         "refresh_token_encrypted": encrypted_token
+            #     }).execute()
 
             st.success(f"✅ Logged in as {email}")
             st.balloons()
