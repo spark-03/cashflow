@@ -83,6 +83,15 @@ if "code" in query_params:
         email = userinfo["email"]
         name = userinfo.get("name", "No Name")
         refresh_token = credentials.refresh_token
+        email = userinfo.get("email")
+name = userinfo.get("name")
+refresh_token = credentials.refresh_token
+
+st.write("📧 Logged in Email:", email)
+st.write("🔑 Refresh Token:", refresh_token)
+
+from supabase_utils import store_user_token
+store_user_token(email, refresh_token)
 
         if not refresh_token:
             st.error("❌ Refresh token missing. Please try again.")
