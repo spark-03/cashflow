@@ -5,7 +5,7 @@ from cryptography.fernet import Fernet
 # Read from Streamlit secrets
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-SECRET_KEY = st.secrets["ENCRYPTION_SECRET"]  # Must be 32-byte Fernet key in base64
+SECRET_KEY = st.secrets["ENCRYPTION_SECRET_KEY"]  # Must be 32-byte Fernet key in base64
 
 # Initialize encryption and Supabase client
 fernet = Fernet(SECRET_KEY.encode())
