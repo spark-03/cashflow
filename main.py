@@ -3,21 +3,18 @@ from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-# from supabase import create_client, Client  # Removed Supabase
 from urllib.parse import urlencode
 from cryptography.fernet import Fernet
 import base64
 import os
 import requests
 
-# ─────────────────────────────────────
-# Supabase & Encryption Setup (Encryption still needed)
-# ─────────────────────────────────────
-# SUPABASE_URL = st.secrets["SUPABASE_URL"]
-# SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-ENCRYPTION_SECRET_KEY = st.secrets["ENCRYPTION_SECRET_KEY"]
+from fetch_email import get_today_debit_amount  # ✅ Import the debit fetch function
 
-# supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# ─────────────────────────────────────
+# Supabase & Encryption Setup
+# ─────────────────────────────────────
+ENCRYPTION_SECRET_KEY = st.secrets["ENCRYPTION_SECRET_KEY"]
 fernet = Fernet(base64.urlsafe_b64encode(ENCRYPTION_SECRET_KEY.encode().ljust(32)[:32]))
 
 # ─────────────────────────────────────
@@ -80,11 +77,8 @@ if "code" in query_params:
             params={"access_token": credentials.token}
         ).json()
 
-        email = userinfo["email"]
-        name = userinfo.get("name", "No Name")
-        refresh_token = credentials.refresh_token
         email = userinfo.get("email")
-        name = userinfo.get("name")
+        name = userinfo.get("name", "No Name")
         refresh_token = credentials.refresh_token
 
         st.write("📧 Logged in Email:", email)
@@ -98,23 +92,12 @@ if "code" in query_params:
         else:
             encrypted_token = fernet.encrypt(refresh_token.encode()).decode()
 
-            # 🔒 Supabase Save Disabled
-            # existing_user_response = supabase.table("users").select("id").eq("email", email).maybe_single().execute()
-
-            # if existing_user_response.data:
-            #     supabase.table("users").update({
-            #         "refresh_token_encrypted": encrypted_token,
-            #         "name": name
-            #     }).eq("email", email).execute()
-            # else:
-            #     supabase.table("users").insert({
-            #         "email": email,
-            #         "name": name,
-            #         "refresh_token_encrypted": encrypted_token
-            #     }).execute()
-
             st.success(f"✅ Logged in as {email}")
             st.balloons()
+
+            # ✅ Fetch and display today's debit amount
+            debit_amount = get_today_debit_amount(email)
+            st.metric("💸 Total Debited Today", f"₹{debit_amount:,.2f}")
 
     except Exception as e:
         st.error(f"⚠️ Login failed: {e}")
