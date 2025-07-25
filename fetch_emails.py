@@ -1,6 +1,7 @@
 import os
 import base64
 import json
+import re
 from datetime import datetime, timedelta
 import streamlit as st
 from supabase import create_client, Client
@@ -59,9 +60,8 @@ def get_today_debit_amount(email):
             msg_data = service.users().messages().get(userId='me', id=msg['id']).execute()
             snippet = msg_data.get('snippet', '').lower()
 
-            # Try to extract ₹amount from message
-            import re
-            match = re.search(r'₹\s?([\d,]+(?:\.\d{1,2})?)', snippet)
+            # Extract amount using regex
+            match = re.search(r'(?:INR|₹|Rs\.?)\s?([\d,]+(?:\.\d{1,2})?)', snippet, re.IGNORECASE)
             if match:
                 amount_str = match.group(1).replace(',', '')
                 try:
