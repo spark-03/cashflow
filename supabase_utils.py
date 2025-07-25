@@ -18,31 +18,31 @@ def encrypt_token(token: str) -> str:
 def store_user_token(email: str, refresh_token: str):
     """Encrypts and stores (or updates) a user's refresh token in Supabase"""
 
-    print(f"[DEBUG] Email received: {email}")
-    print(f"[DEBUG] Refresh token received: {refresh_token}")
+    st.write(f"📧 Email received: `{email}`")
+    st.write(f"🔑 Refresh token received: `{refresh_token}`")
 
     if not email or not refresh_token:
-        print("[ERROR] Missing email or refresh token. Skipping insertion.")
+        st.error("❌ Missing email or refresh token. Skipping insertion.")
         return
 
     try:
         encrypted = encrypt_token(refresh_token)
-        print(f"[DEBUG] Encrypted token: {encrypted[:10]}...")  # show only start of encrypted string
+        st.write(f"🛡️ Encrypted token starts with: `{encrypted[:10]}...`")
 
         data = {"email": email, "refresh_token": encrypted}
 
         # Check if user exists
         existing = supabase.table("users").select("*").eq("email", email).execute()
-        print(f"[DEBUG] Existing user check result: {existing}")
+        st.write(f"🔍 User check result: `{existing}`")
 
         if existing and existing.data:
-            print("[INFO] User exists. Updating token.")
+            st.info("🔄 User exists. Updating token.")
             supabase.table("users").update(data).eq("email", email).execute()
         else:
-            print("[INFO] New user. Inserting token.")
+            st.info("🆕 New user. Inserting token.")
             supabase.table("users").insert(data).execute()
 
-        print("[SUCCESS] Token stored successfully in Supabase.")
+        st.success("✅ Token stored successfully in Supabase.")
 
     except Exception as e:
-        print(f"[EXCEPTION] Failed to store token: {str(e)}")
+        st.error(f"💥 Exception occurred: {str(e)}")
